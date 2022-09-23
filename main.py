@@ -1,3 +1,5 @@
+# Reference : https://github.com/yevini118/choco_sweeper/blob/main
+
 import random, pygame, sys, time
 from pygame.locals import *
 
@@ -20,4 +22,7 @@ flag = -1
 opened = 1
 
 def main():
-	
+	global DISPLAYSURF, GAMEDISPLAY, GAMEWINDOWWIDTH, GAMEWINDOWHEIGHT, CELLWORTH, MINECOUNT, BASICFONT, FACEIMG
+
+	DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), RESIZABLE)
+	BASICFONT = pygame.font.Font('')
