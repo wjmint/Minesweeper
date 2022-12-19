@@ -1,29 +1,47 @@
-const startBtn = document.getElementById('startBtn');
-const tdArr = document.getElementById('td');
+const beginerBtn = document.getElementById('beginer');
+const intermediateBtn = document.getElementById('intermediate');
+const masterBtn = document.getElementById('master');
+const tdArr = document.getElementsByTagName('td');
+const COLOR = ['red', 'skyblue', 'olive', 'green', 'blue', 'purple', 'brown', 'black'];
 let row;
 let col;
 
-startBtn.addEventListener('click', setGame);
+// beginerBtn.addEventListener('click', null);
+// intermediateBtn.addEventListener('click', null);
+// masterBtn.addEventListener('click', null);
 window.addEventListener('contextmenu', function (e) {
 	e.preventDefault();
 });
 
-function setGame() {
+function setGame(roww, coll, mineNumm) {
 	const gameSet = document.querySelector('.gameSet');
 	gameSet.style.display = 'none';
 
-	row = parseInt(document.getElementById('row').value);
-	col = parseInt(document.getElementById('col').value);
-
-	const mineNum = parseInt(document.getElementById('mineNum').value);
+	row = roww;
+	col = coll;
+	mineNum = mineNumm;
 	const mineArr = setMineNumArr(mineNum, row * col);
 
-	makeboard(row, col);
+	makeBoard(row, col);
 	putMineInBoard(mineArr);
+
+	// 타일에 이벤트 넣기
 
 	for (let i = 0; i < tdArr.length; i++) {
 		tileEvent(i, getAroundArr(i));
 	}
+}
+
+function level_beginer() {
+	setGame(9, 9, 10);
+}
+
+function level_intermediate() {
+	setGame(16, 16, 40);
+}
+
+function level_master() {
+	setGame(16, 30, 99);
 }
 
 function getAroundArr(num) {
@@ -39,8 +57,10 @@ function getAroundArr(num) {
 	return [num - row - 1, num - row, num - row + 1, num - 1, num + 1, num + row - 1, num + row, num + row + 1];
 }
 
-function makeboard(rowNum, colNum) {
+// board 만들기
+function makeBoard(rowNum, colNum) {
 	let tableEle = '<table>';
+
 	for (let i = 0; i < colNum; i++) {
 		tableEle += '<tr>';
 		for (let j = 0; j < rowNum; j++) {
@@ -52,6 +72,7 @@ function makeboard(rowNum, colNum) {
 	document.getElementById('gameBoard').innerHTML = tableEle;
 }
 
+// 지뢰 위치 번호 뽑기
 function setMineNumArr(numLimit, numRange) {
 	let mineArr = [];
 	for (let i = 0; i < numLimit; i++) {
@@ -65,6 +86,7 @@ function setMineNumArr(numLimit, numRange) {
 	return mineArr;
 }
 
+// board에 "mine" class로 삽입하기
 function putMineInBoard(mine) {
 	for (let i = 0; i < tdArr.length; i++) {
 		if (mine.indexOf(i) !== -1) {
@@ -81,30 +103,28 @@ function clickTile(targetNum, aroundArr) {
 		tdArr[targetNum].className !== 'mine qmark'
 	) {
 		let count = 0;
-
 		for (let j = 0; j < aroundArr.length; j++) {
-			if (tdArr[aroundArr[j]].classList.contains('mine')) {
-				count++;
-			}
-			if (tdArr[targetNum].className === 'mine') {
-				alert('Game Over');
-			} else if (count === 0) {
-				tdArr[targetNum].style.backgroundColor = 'rgb(225, 250, 173)';
-				for (let k = 0; k < aroundArr.length; k++) {
-					if (tdArr[aroundArr[k]].dataset.isOpen !== 'true') {
-						tdArr[aroundArr[k]].dataset.isOpen = 'true';
-						clickTile(aroundArr[k], getAroundArr([k]));
-					}
+			if (tdArr[aroundArr[j]].classList.contains('mine')) count++;
+		}
+		if (tdArr[targetNum].className === 'mine') {
+			alert('GAME OVER!!!');
+		} else if (count === 0) {
+			tdArr[targetNum].style.backgroundColor = 'rgb(225, 250, 173)';
+			for (let k = 0; k < aroundArr.length; k++) {
+				if (tdArr[aroundArr[k]].dataset.isOpen !== 'true') {
+					tdArr[aroundArr[k]].dataset.isOpen = 'true';
+					clickTile(aroundArr[k], getAroundArr(aroundArr[k]));
 				}
-			} else if (count > 0) {
-				tdArr[targetNum].dataset.isOpen = 'true';
-				tdArr[targetNum].style.color = COLOR[count - 1];
-				tdArr[targetNum].innerHTML = count;
 			}
+		} else if (count > 0) {
+			tdArr[targetNum].dataset.isOpen = 'true';
+			tdArr[targetNum].style.color = COLOR[count - 1];
+			tdArr[targetNum].innerHTML = count;
 		}
 	}
 }
 
+// 타일 클릭 시 실행할 함수 추가
 function tileEvent(targetNum, aroundArr) {
 	tdArr[targetNum].addEventListener('click', function () {
 		clickTile(targetNum, aroundArr);
@@ -112,12 +132,8 @@ function tileEvent(targetNum, aroundArr) {
 
 	tdArr[targetNum].addEventListener('auxclick', function () {
 		if (tdArr[targetNum].dataset.isOpen === 'true') return;
-		if (tdArr[targetNum].className === 'flag' || tdArr[targetNum].className === 'mine flag') {
+		else if (tdArr[targetNum].className === 'flag' || tdArr[targetNum].className === 'mine flag') {
 			tdArr[targetNum].classList.remove('flag');
-			tdArr[targetNum].classList.add('qmark');
-			tdArr[targetNum].innerHTML = '❓';
-		} else if (tdArr[targetNum].className === 'qmark' || tdArr[targetNum].className === 'mine qmark') {
-			tdArr[targetNum].classList.remove('qmark');
 			tdArr[targetNum].innerHTML = '';
 			tdArr[targetNum].style.backgroundColor = '';
 		} else {
