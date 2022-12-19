@@ -41,7 +41,7 @@ function level_intermediate() {
 }
 
 function level_master() {
-	setGame(16, 30, 99);
+	setGame(30, 16, 99);
 }
 
 function getAroundArr(num) {
